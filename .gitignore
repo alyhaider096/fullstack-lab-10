@@ -2,3 +2,8 @@ node_modules/
 dist/
 .env
 *.tsbuildinfo
+report/*.pdf
+report/*.png
+report/rendered/
+report/build_report.py
+report/render_pdf.py
