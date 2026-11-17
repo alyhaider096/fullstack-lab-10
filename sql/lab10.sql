@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 CREATE TABLE IF NOT EXISTS categories (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name varchar(100) NOT NULL UNIQUE,
+    name varchar(30) NOT NULL UNIQUE,
     description text
 );
 
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS notes (
     title varchar(200) NOT NULL,
     content text NOT NULL,
     is_pinned boolean NOT NULL DEFAULT false,
+    views integer NOT NULL DEFAULT 0,
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     user_id integer NOT NULL REFERENCES users(id) ON DELETE CASCADE,

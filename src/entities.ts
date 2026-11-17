@@ -20,7 +20,7 @@ export class Profile {
 @Entity('categories')
 export class Category {
   @PrimaryGeneratedColumn() id: number;
-  @Column({ length: 100, unique: true }) name: string;
+  @Column({ length: 30, unique: true }) name: string;
   @Column({ type: 'text', nullable: true }) description: string | null;
   @OneToMany(() => Note, n => n.category) notes: Relation<Note[]>;
 }
@@ -38,6 +38,7 @@ export class Note {
   @Column({ length: 200 }) title: string;
   @Column({ type: 'text' }) content: string;
   @Column({ name: 'is_pinned', default: false }) isPinned: boolean;
+  @Column({ type: 'integer', default: 0 }) views: number;
   @Column({ name: 'created_at', type: 'timestamptz', default: () => 'now()' }) createdAt: Date;
   @Column({ name: 'updated_at', type: 'timestamptz', default: () => 'now()' }) updatedAt: Date;
   @ManyToOne(() => User, u => u.notes, { onDelete: 'CASCADE' })
