@@ -1,0 +1,402 @@
+{
+  "info": {
+    "name": "CS-301L Lab 10 Notes API",
+    "description": "Run in order against the local NestJS API. Save screenshots of the request URL, status, and response body.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3101"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "categoryId",
+      "value": "1"
+    },
+    {
+      "key": "noteId",
+      "value": "1"
+    },
+    {
+      "key": "categoryName",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Create user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Expected success\", () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set(\"userId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Lab Student\",\"email\":\"lab{{$timestamp}}@example.com\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "02 Empty user statistics",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/users/{{userId}}/stats"
+      }
+    },
+    {
+      "name": "03 Create category",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Expected success\", () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set(\"categoryId\", pm.response.json().id);",
+              "pm.collectionVariables.set(\"categoryName\", pm.response.json().name);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/categories",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Study{{$timestamp}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "04 Duplicate category returns 409",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Duplicate returns 409\", () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/categories",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"{{categoryName}}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "05 Category too long returns 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Validation returns 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/categories",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"ThisCategoryNameHasMoreThanThirtyCharacters\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "06 List categories",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/categories"
+      }
+    },
+    {
+      "name": "07 Create linked note",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Expected success\", () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set(\"noteId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/notes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"NestJS Lab Note\",\"content\":\"PostgreSQL and TypeORM\",\"userId\":{{userId}},\"categoryId\":{{categoryId}},\"tags\":[\"lab10\"]}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "08 Invalid category returns 404",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Missing category returns 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/notes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Bad category\",\"content\":\"test\",\"userId\":{{userId}},\"categoryId\":999999}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "09 Get note views 1",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes/{{noteId}}"
+      }
+    },
+    {
+      "name": "10 Get note views 2",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes/{{noteId}}"
+      }
+    },
+    {
+      "name": "11 Get note views 3",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes/{{noteId}}"
+      }
+    },
+    {
+      "name": "12 Pin note",
+      "event": [],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/notes/{{noteId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"isPinned\":true}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "13 User statistics",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/users/{{userId}}/stats"
+      }
+    },
+    {
+      "name": "14 Pagination page 2",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes?page=2&limit=3"
+      }
+    },
+    {
+      "name": "15 Case-insensitive title search",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes?search=nest"
+      }
+    },
+    {
+      "name": "16 Filter by tag",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes?tag=lab10"
+      }
+    },
+    {
+      "name": "17 Filter by category",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes?categoryId={{categoryId}}"
+      }
+    },
+    {
+      "name": "18 Invalid limit returns 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Limit returns 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes?limit=100"
+      }
+    },
+    {
+      "name": "19 Invalid page returns 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Page returns 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes?page=0"
+      }
+    },
+    {
+      "name": "20 Delete category",
+      "event": [],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/categories/{{categoryId}}"
+      }
+    },
+    {
+      "name": "21 Note retained with null category",
+      "event": [],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/notes/{{noteId}}"
+      }
+    }
+  ]
+}

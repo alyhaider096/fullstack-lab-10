@@ -27,6 +27,8 @@ The entities use explicit table and column mappings to match the SQL schema. `sy
 
 Run `node scripts/smoke.mjs` while the API is running. It checks success and error responses, views, statistics, sorting, and filtering. `evidence/` contains actual SQL and HTTP test output. The HTTP script creates sample users and notes in `lab10_db`.
 
+For Postman, import `postman/Lab10.postman_collection.json`, set the `baseUrl` collection variable to the port where NestJS is running, and run the requests in number order. Requests 01, 03, and 07 save the created IDs for later requests. Save the required Postman response screenshots in `screenshots/`.
+
 ## How it works
 
 The controller receives an HTTP request and validates its DTO through the global ValidationPipe. The service uses a TypeORM repository to work with PostgreSQL. Categories use a dedicated module. The note belongs to a user and may belong to a category; the note and tag relationship uses `note_tags`.
